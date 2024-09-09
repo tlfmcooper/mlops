@@ -19,12 +19,18 @@ def health_check():
     return "OK"
 
 
-@app.route("/predict", methods=["POST"])
+@app.route("/predict", methods=["GET", "POST"])  # Allow GET requests
 def predict():
     try:
-        input_data = request.json
+        if request.method == "GET":
+            # Get parameters from the query string
+            input_data = request.args
+        else:
+            input_data = request.json
+
         if not input_data:
             return jsonify({"message": "No input data provided"}), 400
+
         values_list = [list(input_data.values())]
         prediction = model.predict(values_list)
         if prediction[0] == 0:
